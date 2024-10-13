@@ -90,7 +90,75 @@ int main()
 
 int insertSortedLL(LinkedList *ll, int item)
 {
-	/* add your code here */
+	// 새 노드를 생성한다. 
+	ListNode *new_node = (ListNode*)malloc(sizeof(ListNode));
+	if (new_node == NULL) // 메모리 할당 실패시 
+	{
+		return -1;  // 반환값 타입은 int 형이어야 하는데 0과 1은 인덱스 위치 정보일 수 있음. 그래서 -1 반환
+	}
+
+	// 새 노드를 초기화한다.
+	new_node -> item = item;
+	new_node -> next = NULL;  	
+
+	// 리스트가 비어 있는 경우 
+	if (ll -> head == NULL)
+	{
+		ll -> head = new_node; // 리스트의 head를 새 노드로 변경 
+		ll -> size = 1; // 리스트 크기 증가
+		return 0;
+	}
+	// 새로운 항목이 첫번째 노드보다 작은 경우 
+	else if (item < ll -> head -> item)
+	{
+		new_node -> next = ll -> head; // 리스트의 head를 새 노드의 다음 포인터로 변경 
+		ll -> head = new_node; // 리스트의 head를 새 노드로 변경
+		ll -> size++; // 리스트 크기 증가
+		return 0;
+	}
+	
+	// 리스트를 순회하면서 새 항목을 삽입할 적절한 위치를 찾는다. 
+	// 연결 리스트는 배열과 달리 인덱스로 접근할 수 없다. 
+	// 노드간의 이동은 현재 노드의 next 포인터를 따라 이동한다. 
+	
+	// 현재 노드와 이전 노드 변수, 인덱스 변수를 선언한다. 
+	ListNode *current_node = ll -> head; 
+	ListNode *previous_node = NULL;
+	int index = 0; // 인덱스 정보 초기화 (while문 돌면서 1씩 증가 )
+
+	// 삽입 위치를 찾을 때까지 
+	while ( current_node != NULL && current_node -> item < item ) 
+	{	
+		previous_node = current_node; // 현재 노드는 이전 노드가 된다. 
+		current_node = previous_node -> next; // 이전 노드의 다음 포인터는 현재 노드가 된다. 
+		index++; // 인덱스 카운트 
+ 	}
+
+	// 새 노드를 삽입한다.
+	// 리스트의 맨 앞에 삽입되는 경우 
+	if (previous_node == NULL)
+	{
+		new_node -> next = ll -> head; // 새 노드의 다음 포인터는 리스트의 헤드를 가리킨다. 
+		ll -> head = new_node; // 리스트의 헤드는 새로운 노드가 된다. 
+	}
+	// 리스트의 중간에 삽입되는 경우 
+	else if (current_node != NULL && current_node -> item >= item)
+	{
+		previous_node -> next = new_node; // 이전 노드의 다음 포인터는 새 노드를 가리킨다.
+		new_node -> next = current_node; // 새 노드의 다음 포인터는 현재 노드를 가리킨다. 
+	}
+	// 리스트의 맨 마지막에 삽입되는 경우 
+	else
+	{
+		previous_node -> next = new_node; // 이전 노드의 다음 포인터는 새 노드를 가리킨다.
+		new_node -> next = NULL; // 새 노드의 다음 포인터는 널값이다. 
+	}
+
+	// 리스트의 크기를 증가 시킨다. 
+	ll -> size++; 
+
+	// 삽입된 인덱스를 반환한다. 
+	return index;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////
